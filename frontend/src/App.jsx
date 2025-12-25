@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import Management from './pages/Management';
+import Customer from './pages/Customer';
+import Guest from './pages/Guest';
+
 function App() {
   // 'splash', 'menu', 'management', 'Customer', 'guest'
   const [view, setView] = useState('splash');
@@ -50,26 +54,9 @@ function App() {
       )}
 
       {/* 3. Login Portals Section */}
-      {view == 'management' && (
-        <div>
-          <h1 className="text-4xl mb-4">Management Portal</h1>
-          <button onClick={() => setView('menu')} className="text-sm underline">Back to Menu</button>
-        </div>
-      )}
-
-      {view == 'customer' && (
-        <div>
-          <h1 className="text-4xl mb-4">Customer Portal</h1>
-          <button onClick={() => setView('menu')} className="text-sm underline">Back to Menu</button>
-        </div>
-      )}
-
-      {view == 'guest' && (
-        <div>
-          <h1 className="text-4xl mb-4">Guest Portal</h1>
-          <button onClick={() => setView('menu')} className="text-sm underline">Back to Menu</button>
-        </div>
-      )}
+      {view == 'management' && <Management onBack={() => setView('menu')}/>}
+      {view == 'customer' && <Customer onBack={() => setView('menu')}/>}
+      {view == 'guest' && <Guest onBack={() => setView('menu')}/>}
     </div>
   );
 }
