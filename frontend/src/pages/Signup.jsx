@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, User, Phone, Eye, EyeOff } from "lucide-react"; // Added icons for consistent look
-import formatPhoneNumber from "../utils/phoneFormatter";
+import formatPhoneNumber from "../utils/formatPhoneNumber";
 
 export default function Signup() {
     const navigate = useNavigate();

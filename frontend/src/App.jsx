@@ -22,10 +22,17 @@ function App() {
   const [customerStatus, setCustomerStatus] = useState("guest"); // either guest or logged-in
 
   useEffect(() => {
-    // Check if a user is already logged in when the page refreshes
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      const parsedUser = JSON.parse(savedUser);
+      setUser(parsedUser);
+
+      // Sync the status based on the recovered user data
+      if (parsedUser.role === 'customer') {
+        setCustomerStatus('customer');
+      } else if (parsedUser.role === 'admin') {
+        setCustomerStatus('admin');
+      }
     }
   }, []);
 
