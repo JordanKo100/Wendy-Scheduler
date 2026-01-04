@@ -1,12 +1,35 @@
-export default function Management({ onBack }){
-    return (
-        <div>
-            <h1 className="text-4xl font-bold mb-6">Management Dashboard</h1>
-            <p className="mb-8 text-neutral-400">Viewing Appointments for Today...</p>
+import { useState } from "react";
 
-            <button onClick={onBack} className="mt-10 px-6 py-2 border border-white rounded-full hover:bg-white hover:text-black transition-all">
-                Back Menu
-            </button>
+export default function Management(){
+    const [panel, setPanel] = useState('appointments');
+
+    return(
+        <div className="managementPanel">
+            <div className="sideBar">
+                <ul>
+                    <li>
+                        <button onClick={() => {setPanel('appointments')}}>
+                            Appointments
+                        </button>
+                    </li>
+                    <li>                       
+                        <button onClick={() => {setPanel('customers')}}>
+                            Customers
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            {panel === 'appointments' && (
+                <div>
+                    Upcoming Appointments
+                </div>
+            )}
+            {panel === 'customers' && (
+                <div>
+                    Top Customers
+                </div>
+            )}
         </div>
-    );
+    )
 }

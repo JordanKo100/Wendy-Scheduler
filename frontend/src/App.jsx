@@ -1,62 +1,101 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 
+import './App.css'
+
+import Splash from './pages/Splash';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Pricing from './pages/Pricing';
+import About from './pages/About';
+import Contact from './pages/Contact';
 import Management from './pages/Management';
 import Customer from './pages/Customer';
-import Guest from './pages/Guest';
+import Signup from './pages/Signup';
+import Book from './pages/Book';
 
 function App() {
-  // 'splash', 'menu', 'management', 'Customer', 'guest'
-  const [view, setView] = useState('splash');
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const [user, setUser] = useState(null); // Track logged-in user type (ie. 'admin' or 'customer')
+  const [customerStatus, setCustomerStatus] = useState("guest"); // either guest or logged-in
+
+  useEffect(() => {
+    // Check if a user is already logged in when the page refreshes
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  const handleLogin = () => {
+    navigate('/login');
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('user'); // Clear storage
+    setUser(null); // Reset state to show "Sign In" again
+    setCustomerStatus('guest');
+    navigate('/home');
+  };
 
   return (
-    <div className="min-h-screen bg-neutral-900 text-white flex flex-col items-center justify-center overflow-hidden">
-      
-      {/* 1. Splash Screen Section */}
-      <AnimatePresence>
-        {view == 'splash' && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ y: -1000 }} // Slides up and out
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="text-center cursor-pointer"
-            onClick={() => setView('menu')}
-          >
-            <h1 className="text-6xl font-serif mb-4">Wendy's Hair Salon</h1>
-            <p className="text-xl text-neutral-400">Click to enter</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* 2. Login Options Section */}
-      {view == 'menu' && (
-        <motion.div 
-          initial={{ y: 500, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-          className="w-full max-w-md space-y-4 p-6"
-        >
-          <h2 className="text-2xl font-bold text-center mb-8">Select Login Type</h2>
-          
-          <button className="w-full py-4 border-2 border-white hover:bg-white hover:text-black transition-all rounded-lg text-xl font-bold" onClick={() => setView('management')}>
-            Management Login
-          </button>
-          
-          <button className="w-full py-4 border-2 border-white hover:bg-white hover:text-black transition-all rounded-lg text-xl font-bold" onClick={() => setView('customer')}>
-            Customer Login
-          </button>
-          
-          <button className="w-full py-4 bg-white text-black hover:bg-neutral-200 transition-all rounded-lg text-xl font-bold" onClick={() => setView('guest')}>
-            Guest Login
-          </button>
-        </motion.div>
+    <div className="appContainer">
+      {/* 1. Header: Only shows if the URL is NOT the home page ('/') */}
+      {location.pathname !== '/' && (
+        <nav className="mainHeader">
+          <div className="logo">
+            <Link to="/" className="logoLink">
+              <span className="logoMainText">Wendy's 名流髮廊</span>
+              <span className="logoSubText">Hair Salon</span>
+            </Link>
+          </div>          
+          <div className="navLinks">
+            <Link to="/home">Home</Link>
+            <Link to="/pricing">Pricing</Link>
+            <Link to="/about">About</Link>
+            <Link to="/contact">Contact</Link>
+            {user ? (
+              <>
+                {user.role === 'customer' && (
+                  <Link to="/booking">Book Here</Link>
+                )}
+                {/* Link to /management or /customer based on their role */}
+                <Link to={user.role === 'admin' ? "/management" : "/customer"}>
+                  {user.role === 'admin' ? "Admin Panel" : "My Profile"}
+                </Link>
+                <button onClick={handleLogout} 
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
+                    Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/booking">Book Here</Link>
+                <button onClick={handleLogin} 
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">
+                    Sign In
+                </button>
+              </>
+            )}
+          </div>
+        </nav>
       )}
 
-      {/* 3. Login Portals Section */}
-      {view == 'management' && <Management onBack={() => setView('menu')}/>}
-      {view == 'customer' && <Customer onBack={() => setView('menu')}/>}
-      {view == 'guest' && <Guest onBack={() => setView('menu')}/>}
+      {/* 2. Page Content: Changes based on URL */}
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Splash />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={<Login setUser={setUser} setCustomerStatus={setCustomerStatus}/>} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/management" element={<Management />} />
+        <Route path="/customer" element={<Customer user={user}/>} />
+        <Route path="/booking" element={<Book user={user} customerStatus={customerStatus}/>} />
+      </Routes>
     </div>
   );
 }
