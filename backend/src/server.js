@@ -19,7 +19,9 @@ try {
             res.status(200).json({ 
                 success: true, 
                 user: {
+                    username: rows[0].username,
                     email: rows[0].email,
+                    phone: rows[0].phone,
                     role: rows[0].role
                 }
              });
