@@ -25,7 +25,7 @@ export default function Signup() {
             setError("Passwords Do Not Match");
         }
 
-        const checkResponse = await fetch('/api/check-user', {
+        const checkResponse = await fetch('/api/auth/check-user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: formData.email })
@@ -35,7 +35,7 @@ export default function Signup() {
         if (checkResult.exists) {
             setError("Email already in use. Please log in.");
         } else {
-            const response = await fetch('/api/signup', {
+            const response = await fetch('/api/auth/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

@@ -20,7 +20,7 @@ export default function Login({setUser, setCustomerStatus}){
         setError(""); // Clear previous errors on new attempt
         
         try {
-            const response = await fetch('/api/login', {
+            const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(formData)
@@ -34,7 +34,7 @@ export default function Login({setUser, setCustomerStatus}){
                     setCustomerStatus('customer');
                     navigate('/customer');
                 } else {
-                    navigate('management');
+                    navigate('/management');
                 }
             } else {
                 // Set the error message instead of an alert

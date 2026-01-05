@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Swal from 'sweetalert2';
 import { Mail, User, Phone, Calendar, Clock } from "lucide-react";
 import formatPhoneNumber from "../utils/formatPhoneNumber";
 import generateTimeSlots from "../utils/generateTimeSlots";
@@ -11,16 +12,53 @@ export default function Book({user, customerStatus}){
         date: "",
         time: "",
         notes: ""
-    })
+    });
+
+    useEffect(() => {
+        // If a customer is logged in, pre-fill the form with their account data
+        if (customerStatus === 'customer' && user) {
+            setFormData(prev => ({
+                ...prev,
+                name: user.username || "", // Map 'username' from DB to 'name' in form
+                email: user.email || "",
+                phone: user.phone || ""
+            }));
+        }
+    }, [user, customerStatus]); // This runs whenever 'user' or 'status' changes
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         const finalValue = name === 'phone' ? formatPhoneNumber(value) : value;
+        
         setFormData({ ...formData, [name]: finalValue });
     };
 
-    const handleSubmit = (e) => {
-        // TODO: add mongoDB connection for appointments
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('/api/reservations/create', {
+                method: 'POST',
+                headers: { 'content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                Swal.fire({
+                    title: 'Appointment Booked!',
+                    text: `We'll see you on ${formData.date}`,
+                    icon: 'success',
+                    confirmButtonColor: '#ED1B24', // Use your brand red!
+                    borderRadius: '20px',
+                    customClass: {
+                        title: 'font-black italic text-2xl',
+                        confirmButton: 'rounded-xl font-bold px-8'
+                    }
+                });
+            }
+        } catch (err) {
+            console.error("Connection Failed:", err);
+        }
     }
 
     return (
@@ -45,25 +83,17 @@ export default function Book({user, customerStatus}){
                         {/* 1. CONTACT INFO SECTION (Only for Guests) */}
                         {customerStatus === 'guest' && (
                             <div className="space-y-4 animate-fadeIn">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 gap-4">
                                     <div className="space-y-1">
                                         <label className="text-xs font-bold uppercase text-gray-500 ml-1">First Name</label>
                                         <div className="relative">
                                             <User className="absolute left-3 top-3.5 text-gray-400" size={18} />
                                             <input 
-                                                type="text" name="firstName" placeholder="First Name"
+                                                type="text" name="name" placeholder="John Doe"
                                                 className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#ED1B24] outline-none transition-all"
-                                                value={formData.firstName} onChange={handleChange} required
+                                                value={formData.name} onChange={handleChange} required
                                             />
                                         </div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500 ml-1">Last Name</label>
-                                        <input 
-                                            type="text" name="lastName" placeholder="Last Name"
-                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#ED1B24] outline-none transition-all"
-                                            value={formData.lastName} onChange={handleChange} required
-                                        />
                                     </div>
                                 </div>
 
@@ -84,7 +114,7 @@ export default function Book({user, customerStatus}){
                                         <div className="relative">
                                             <Phone className="absolute left-3 top-3.5 text-gray-400" size={18} />
                                             <input 
-                                                type="text" name="phone" placeholder="(604) 000-0000"
+                                                type="text" name="phone" placeholder="(123) 456-7890"
                                                 className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#ED1B24] outline-none transition-all"
                                                 value={formData.phone} onChange={handleChange} required
                                             />
@@ -128,7 +158,7 @@ export default function Book({user, customerStatus}){
                                         required
                                     >
                                         <option value="">Select Time</option>
-                                        {generateTimeSlots().map((slot, index) => (
+                                        {generateTimeSlots().map((slot, index) => ( // TODO: adjust time 
                                             <option key={index} value={slot}>{slot}</option>
                                         ))}
                                     </select>
