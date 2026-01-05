@@ -1,5 +1,5 @@
 // backend/src/db.js
-const mysql = require('mysql2/promise'); // <--- MUST have /promise
+const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 const pool = mysql.createPool({
@@ -9,5 +9,4 @@ const pool = mysql.createPool({
     database: process.env.DB_NAME
 });
 
-// Important: Export the pool so server.js can see it
 module.exports = pool;

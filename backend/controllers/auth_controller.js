@@ -1,15 +1,9 @@
-const express = require('express');
-const cors = require('cors');
-const db = require('./db');
+import db from '../config/db_mysql.js';
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-app.post('/api/login', async(req, res) => {
+const loginRequest = async (req, res) => {
     const {email, password} = req.body;
 
-try {
+    try {
         // 1. Query the database using the pool
         const sql = "SELECT * FROM users WHERE email = ?";
         const [rows] = await db.execute(sql, [email]);
@@ -32,9 +26,9 @@ try {
         console.error(err);
         res.status(500).json({ success: false, message: "Database error" });
     }
-});
+}
 
-app.post('/api/signup', async (req, res) => {
+const signUpRequest = async (req, res) => {
     const { email, firstName, lastName, phone, password } = req.body;
 
     try {
@@ -50,9 +44,9 @@ app.post('/api/signup', async (req, res) => {
         }
         res.status(500).json({ message: "Database error" });
     }
-}); 
+}
 
-app.post('/api/check-user', async (req, res) => {
+const checkUserRequest = async (req, res) => {
     const { email } = req.body;
 
     try {
@@ -69,6 +63,6 @@ app.post('/api/check-user', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: "Database error" });
     }
-});
+}
 
-app.listen(5000, () => console.log("Server running on port 5000"));
+export { loginRequest, signUpRequest, checkUserRequest };
