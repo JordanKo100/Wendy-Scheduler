@@ -5,6 +5,11 @@ import formatPhoneNumber from "../utils/formatPhoneNumber";
 import generateTimeSlots from "../utils/generateTimeSlots";
 
 export default function Book({user, customerStatus}){
+    const [error, setError] = useState("");
+    const [takenSlots, setTakenSlots] = useState([]);
+
+    const today = new Date().toISOString().split('T')[0];
+
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -13,6 +18,18 @@ export default function Book({user, customerStatus}){
         time: "",
         notes: ""
     });
+
+    // Whenever the date changes, ask the server which times are gone
+    useEffect(() => {
+        if (formData.date) {
+            const fetchAvailability = async () => {
+                const res = await fetch(`/api/reservations/check-availability/${formData.date}`);
+                const data = await res.json();
+                if (data.success) setTakenSlots(data.takenSlots);
+            };
+            fetchAvailability();
+        }
+    }, [formData.date]);
 
     useEffect(() => {
         // If a customer is logged in, pre-fill the form with their account data
@@ -33,33 +50,61 @@ export default function Book({user, customerStatus}){
         setFormData({ ...formData, [name]: finalValue });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await fetch('/api/reservations/create', {
-                method: 'POST',
-                headers: { 'content-Type': 'application/json'},
-                body: JSON.stringify(formData)
-            });
-            const data = await response.json();
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(""); // Clear any previous errors
 
-            if (data.success) {
-                Swal.fire({
-                    title: 'Appointment Booked!',
-                    text: `We'll see you on ${formData.date}`,
-                    icon: 'success',
-                    confirmButtonColor: '#ED1B24', // Use your brand red!
-                    borderRadius: '20px',
-                    customClass: {
-                        title: 'font-black italic text-2xl',
-                        confirmButton: 'rounded-xl font-bold px-8'
-                    }
-                });
-            }
-        } catch (err) {
-            console.error("Connection Failed:", err);
-        }
+    // 1. Create a date object from the form state
+    // We use getUTCDay to avoid timezone shifting issues with YYYY-MM-DD strings
+    const dateObj = new Date(formData.date);
+    const day = dateObj.getUTCDay();
+
+    if (day === 2) {
+        Swal.fire({
+            title: 'Closed on Tuesdays',
+            text: "Wendy's is resting up today! Please choose any other day of the week.",
+            icon: 'info',
+            confirmButtonColor: '#0078c4'
+        });
+        return;
     }
+
+    try {
+        const response = await fetch('/api/reservations/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+
+        if (data.success) {
+            Swal.fire({
+                title: 'Appointment Booked!',
+                text: `We'll see you on ${formData.date}`,
+                icon: 'success',
+                confirmButtonColor: '#ED1B24',
+                customClass: {
+                    title: 'font-black italic text-2xl',
+                    confirmButton: 'rounded-xl font-bold px-8'
+                }
+            });
+            
+            // Optional: Clear form after success
+            setFormData({
+                ...formData,
+                date: "",
+                time: "",
+                notes: ""
+            });
+        } else {
+            setError(data.message || "Something went wrong. Please try again.");
+        }
+    } catch (err) {
+        console.error("Connection Failed:", err);
+        setError("Could not connect to the server. Please check your internet.");
+    }
+};
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
@@ -79,13 +124,14 @@ export default function Book({user, customerStatus}){
                         </h1>
                         <div className="h-1 w-12 bg-[#FEF200] mt-2"></div>
                     </div>
+
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* 1. CONTACT INFO SECTION (Only for Guests) */}
                         {customerStatus === 'guest' && (
                             <div className="space-y-4 animate-fadeIn">
                                 <div className="grid grid-cols-1 gap-4">
                                     <div className="space-y-1">
-                                        <label className="text-xs font-bold uppercase text-gray-500 ml-1">First Name</label>
+                                        <label className="text-xs font-bold uppercase text-gray-500 ml-1">Full Name</label>
                                         <div className="relative">
                                             <User className="absolute left-3 top-3.5 text-gray-400" size={18} />
                                             <input 
@@ -140,9 +186,13 @@ export default function Book({user, customerStatus}){
                                 <div className="relative">
                                     <Calendar className="absolute left-3 top-3.5 text-gray-400" size={18} />
                                     <input 
-                                        type="date" name="date"
+                                        type="date" 
+                                        name="date"
+                                        min={today}
                                         className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#ED1B24] outline-none transition-all"
-                                        value={formData.date} onChange={handleChange} required
+                                        value={formData.date} 
+                                        onChange={handleChange}
+                                        required
                                     />
                                 </div>
                             </div>
@@ -158,9 +208,11 @@ export default function Book({user, customerStatus}){
                                         required
                                     >
                                         <option value="">Select Time</option>
-                                        {generateTimeSlots().map((slot, index) => ( // TODO: adjust time 
-                                            <option key={index} value={slot}>{slot}</option>
-                                        ))}
+                                            {generateTimeSlots()
+                                                .filter(slot => !takenSlots.includes(slot)) // <--- THE FILTER
+                                                .map((slot, index) => (
+                                                    <option key={index} value={slot}>{slot}</option>
+                                            ))}
                                     </select>
                                 </div>
                             </div>

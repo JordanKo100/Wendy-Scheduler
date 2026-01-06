@@ -1,6 +1,6 @@
 export default function generateTimeSlots(){
     const slots = [];
-    for (let hour = 9; hour < 21; hour++){
+    for (let hour = 11; hour < 18; hour++){
         const startHour = hour % 12 === 0 ? 12 : hour % 12;
         const startPeriod = hour < 12 ? "AM" : "PM";
 

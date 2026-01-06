@@ -1,9 +1,7 @@
 import Reservation from "../models/booking_model.js";
 
 const createReservation = async (req, res) => {
-    try {
-        console.log("Data received:", req.body); // Log the JSON you just showed me
-        
+    try {        
         const { name, email, phone, date, time, notes } = req.body;
         
         const booking = new Reservation({ name, email, phone, date, time, notes });
@@ -26,10 +24,13 @@ const createReservation = async (req, res) => {
 
 const getAllReservation = async (req, res) => {
     try {
-        const bookings = await Reservation.find();
+        const bookings = await Reservation.find().sort({
+            date: 1,
+            time: 1
+        });
         return res.status(200).json({
             success: true,
-            bookings:bookings
+            bookings: bookings
         });
     } catch (err) {
         console.error("The actual error is:", err.message);
@@ -59,4 +60,19 @@ const deleteReservation = async (req, res) => {
     }
 }
 
-export { createReservation, getAllReservation, deleteReservation };
+const checkAvailability = async (req, res) => {
+    try {
+        const booked = await Reservation.find({ date: req.params.date }).select('time');
+        const times = booked.map(b => b.time); // Returns e.g. ["10:00 AM", "1:30 PM"]
+        res.json({ success: true, takenSlots: times });
+    } catch (err) {
+        res.status(500).json({ success: false });
+    }
+}
+
+export { 
+    createReservation, 
+    getAllReservation, 
+    deleteReservation,
+    checkAvailability
+};
