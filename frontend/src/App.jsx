@@ -7,8 +7,6 @@ import Splash from './pages/Splash';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Pricing from './pages/Pricing';
-import About from './pages/About';
-import Contact from './pages/Contact';
 import Management from './pages/Management';
 import Customer from './pages/Customer';
 import Signup from './pages/Signup';
@@ -61,8 +59,6 @@ function App() {
           <div className="navLinks">
             <Link to="/home">Home</Link>
             <Link to="/pricing">Pricing</Link>
-            <Link to="/about">About</Link>
-            <Link to="/contact">Contact</Link>
             {user ? (
               <>
                 {user.role === 'customer' && (
@@ -93,10 +89,8 @@ function App() {
       {/* 2. Page Content: Changes based on URL */}
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Splash />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/home" element={<Home user={user}/>} />
         <Route path="/pricing" element={<Pricing />} />
-        <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login setUser={setUser} setCustomerStatus={setCustomerStatus}/>} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/management" element={<Management />} />

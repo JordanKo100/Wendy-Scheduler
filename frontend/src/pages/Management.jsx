@@ -138,7 +138,6 @@ export default function Management() {
                                                                 <p className="text-xs text-gray-400 italic">"{app.notes}"</p>
                                                             </div>
                                                         )}
-                                                        <ChevronRight className="text-gray-300 group-hover:text-[#ED1B24] transition-colors" />
                                                     </div>
                                                 </div>
                                             ))}

@@ -3,8 +3,11 @@ import Swal from 'sweetalert2';
 import { Mail, User, Phone, Calendar, Clock } from "lucide-react";
 import formatPhoneNumber from "../utils/formatPhoneNumber";
 import generateTimeSlots from "../utils/generateTimeSlots";
+import { useNavigate } from "react-router-dom";
 
 export default function Book({user, customerStatus}){
+    const navigate = useNavigate();
+
     const [error, setError] = useState("");
     const [takenSlots, setTakenSlots] = useState([]);
 
