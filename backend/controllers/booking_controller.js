@@ -70,9 +70,27 @@ const checkAvailability = async (req, res) => {
     }
 }
 
+const updateReservation = async (req, res) => {
+    try {
+        const {id} = req.params;
+
+        const {name, time, date} = req.body;
+        const updateData = { 
+            name: name,
+            date: date,
+            time: time
+        };
+        await Reservation.findByIdAndUpdate(id, updateData)
+        res.json({success: true, message: "Successfully Updated Appointment"});
+    } catch (err) {
+        res.status(500).json({success: false});
+    }
+}
+
 export { 
     createReservation, 
     getAllReservation, 
     deleteReservation,
-    checkAvailability
+    checkAvailability,
+    updateReservation
 };

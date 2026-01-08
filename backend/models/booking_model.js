@@ -16,7 +16,7 @@ const reservationSchema = new mongoose.Schema({
 // Middleware to calculate the exact expiration time before saving
 reservationSchema.pre('save', async function() {
     // Note: We removed 'next' from the arguments
-    if (this.date && this.time) {
+    if (this && this.date && this.time) {
         // 1. Start with the date
         const expiration = new Date(this.date);
         
@@ -30,7 +30,6 @@ reservationSchema.pre('save', async function() {
         
         console.log("Auto-calculated expiry:", this.expireAt);
     }
-    // No next() needed when using async!
 });
 
 export default mongoose.model("Reservation", reservationSchema);
