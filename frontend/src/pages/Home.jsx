@@ -16,20 +16,17 @@ export default function Home({user}) {
 
     return (
         <div className="min-h-screen bg-white text-[#1a1a1a]">
-            {/* --- BRANDED HERO SECTION --- */}
-            {/* We use #FEF200 for that bright yellow background from your image */}
             <section className="px-6 pt-24 pb-20 bg-white relative overflow-hidden">
                 <div className="max-w-5xl mx-auto relative z-10">
                     <div className="flex items-center gap-2 mb-6">
                         <div className="h-1 w-12 bg-[#FEF200]"></div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ED1B24]">Established xxxx</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-black">Since xxxx</span>
                     </div>
                     
                     {/* Main title uses #ED1B24 (Red) and #0056b3 (Blue) to match your sign */}
                     <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter mb-4 leading-[0.85] text-[#ED1B24]">
-                        WENDY’S <br /> 
-                        <span className="text-2xl md:text-4xl block mt-2 text-gray-800">名流髮廊</span>
-                        <span className="text-[#0056b3] drop-shadow-sm">HAIR SALON</span>
+                        WENDY’S 名流髮廊<br /> 
+                        <span className="text-2xl md:text-6xl block mt-2 text-[#0056b3]">Hair Salon</span>
                     </h1>
 
                     <div className="max-w-xl mt-8">
