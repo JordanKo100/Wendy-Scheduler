@@ -6,12 +6,12 @@ export default function Home({user}) {
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
     
     const hours = [
-        { day: "Monday", time: "10:30 AM - 6:30 PM" },
+        { day: "Monday", time: "11:00 AM - 6:30 PM" },
         { day: "Tuesday", time: "Closed", closed: true },
-        { day: "Wednesday", time: "10:30 AM - 6:30 PM" },
-        { day: "Thursday", time: "10:30 AM - 6:30 PM" },
-        { day: "Friday", time: "10:30 AM - 6:30 PM" },
-        { day: "Saturday", time: "10:00 AM - 7:00 PM" },
+        { day: "Wednesday", time: "11:00 AM - 6:30 PM" },
+        { day: "Thursday", time: "11:00 AM - 6:30 PM" },
+        { day: "Friday", time: "11:00 AM - 6:30 PM" },
+        { day: "Saturday", time: "11:00 AM - 7:00 PM" },
         { day: "Sunday", time: "11:00 AM - 5:00 PM" },
     ];
 
