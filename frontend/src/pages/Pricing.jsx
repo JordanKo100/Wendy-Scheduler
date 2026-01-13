@@ -8,29 +8,31 @@ export default function Pricing() {
             category: "Haircuts",
             icon: <Scissors className="text-[#ED1B24]" size={24} />,
             services: [
-                { name: "Men's Haircut", price: "$25+" },
-                { name: "Women's Haircut", price: "$35+" },
-                { name: "Senior / Kids", price: "$20+" },
-                { name: "Bang Trim", price: "$10" },
+                { name: "Men's", price: "$18" },
+                { name: "Women's (Short Hair)", price: "$21" },
+                { name: "Women's (Medium Hair)", price: "$25" },
+                { name: "Women's (Long Hair)", price: "$28+" },
+                { name: "Men's (Senior)", price: "$16.50" },
+                { name: "Women's (Senior)", price: "$20" },
+                { name: "Kids (Under 3)", price: "$10" },
+                { name: "Boys (Under 13)", price: "$14.50" },
+                { name: "Girls (Under 13)", price: "$18" }
             ]
         },
         {
-            category: "Styling",
+            category: "Styling & Perm",
             icon: <Wind className="text-[#0078c4]" size={24} />,
             services: [
-                { name: "Wash & Blow Dry", price: "$30+" },
-                { name: "Flat Iron / Curls", price: "$15+" },
-                { name: "Up-do Styling", price: "$55+" },
+                { name: "Perm", price: "$85+" },
+                { name: "Straightening", price: "$180+" }
             ]
         },
         {
-            category: "Color & Perm",
+            category: "Color",
             icon: <Sparkles className="text-[#FEF200]" size={24} />,
             services: [
-                { name: "Root Touch-up", price: "$60+" },
-                { name: "Full Color", price: "$90+" },
-                { name: "Perm (Regular)", price: "$80+" },
-                { name: "Digital Perm", price: "$150+" },
+                { name: "Color", price: "$45+" },
+                { name: "Highlights", price: "$55+" },
             ]
         }
     ];
@@ -83,13 +85,13 @@ export default function Pricing() {
                     ))}
                 </div>
 
-                {/* --- DISCLAIMER BOX ---
                 <div className="mt-12 p-8 bg-white/50 border-2 border-dashed border-gray-200 rounded-[2rem] text-center">
                     <p className="text-sm text-gray-400 font-medium italic">
-                        * Prices vary based on hair length, thickness, and stylist level. <br />
-                        Please consult with Wendy for a final quote before your service.
+                        $12 only if your request for simple cut like shave it bald or <br />
+                        simple trim upon looking at your hair style <br />
+                        GST Included
                     </p>
-                </div> */}
+                </div>
 
                 {/* --- CTA --- */}
                 <div className="mt-12 text-center">
