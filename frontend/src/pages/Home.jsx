@@ -1,5 +1,6 @@
-import React from 'react';
 import { Phone, MapPin, Clock, Scissors, ExternalLink } from 'lucide-react';
+
+import BookButton from '../components/BookButton';
 
 export default function Home({user}) {
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
@@ -20,18 +21,18 @@ export default function Home({user}) {
                 <div className="max-w-5xl mx-auto relative z-10">
                     <div className="flex items-center gap-2 mb-6">
                         <div className="h-1 w-12 bg-[#FEF200]"></div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-black">Since xxxx</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-black">Since 2015</span>
                     </div>
                     
                     {/* Main title uses #ED1B24 (Red) and #0056b3 (Blue) to match your sign */}
                     <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter mb-4 leading-[0.85] text-[#ED1B24]">
-                        WENDY’S 名流髮廊<br /> 
+                        WENDY’S<br /> 
                         <span className="text-2xl md:text-6xl block mt-2 text-[#0056b3]">Hair Salon</span>
                     </h1>
 
                     <div className="max-w-xl mt-8">
                         <p className="text-xl leading-relaxed text-gray-900 font-medium mb-8">
-                            Providing hair services in the Renfrew Collingwood area for over XX years at 
+                            Providing hair services in the Renfrew Collingwood area for over 10+ years at 
                             affordable prices that respect our neighbors.
                         </p>
                         
@@ -45,12 +46,7 @@ export default function Home({user}) {
                                     Admin Panel
                                 </a>
                             ) : (
-                                <a 
-                                    href="/booking" 
-                                    className="px-10 py-4 bg-[#ED1B24] text-white font-black rounded-xl hover:bg-black transition-all transform active:scale-95 shadow-xl uppercase italic tracking-wider"
-                                >
-                                    Book Now
-                                </a>
+                                <BookButton className="px-10 py-4 bg-[#ED1B24] text-white font-black rounded-xl hover:bg-black transition-all transform active:scale-95 shadow-xl uppercase italic tracking-wider" />
                             )}
 
                             <a 

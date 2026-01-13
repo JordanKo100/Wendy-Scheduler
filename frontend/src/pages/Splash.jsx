@@ -16,7 +16,7 @@ export default function Splash() {
       {/* Container for the logo text to give it weight */}
       <div className="mb-12">
         <h1 className="text-4xl md:text-6xl font-black italic text-[#ED1B24] drop-shadow-md">
-          Wendy's <span className="block not-italic mt-2">名流髮廊</span>
+          Wendy's
         </h1>
         <p className="text-[#0078c4] font-bold uppercase tracking-[0.2em] mt-4 text-lg">
           Hair Salon

@@ -1,8 +1,8 @@
-import React from 'react';
 import { Scissors, Sparkles, Wind, Eraser } from 'lucide-react';
 
+import BookButton from '../components/BookButton';
+
 export default function Pricing() {
-    // --- EDIT YOUR SERVICES HERE ---
     const serviceCategories = [
         {
             category: "Haircuts",
@@ -93,9 +93,7 @@ export default function Pricing() {
 
                 {/* --- CTA --- */}
                 <div className="mt-12 text-center">
-                    <a href="/booking" className="inline-block px-12 py-5 bg-[#ED1B24] text-white font-black rounded-2xl hover:bg-black transition-all shadow-lg hover:-translate-y-1 uppercase tracking-widest italic text-sm">
-                        Book Appointment
-                    </a>
+                    <BookButton className="inline-block px-12 py-5 bg-[#ED1B24] text-white font-black rounded-2xl hover:bg-black transition-all shadow-lg hover:-translate-y-1 uppercase tracking-widest italic text-sm" />
                 </div>
             </div>
         </div>

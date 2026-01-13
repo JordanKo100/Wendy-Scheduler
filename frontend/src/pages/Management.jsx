@@ -1,15 +1,11 @@
 import { useState, useEffect } from "react";
-import { Calendar, Users, Clock, Phone, Pencil } from "lucide-react";
+import { Users, Clock, Phone, Pencil } from "lucide-react";
 import Swal from 'sweetalert2';
 
+import AdminSidebar from "../components/AdminSidebar";
+import NoAppointmentBox from "../components/NoAppointmentBox";
 
 export default function Management() {
-    const [panel, setPanel] = useState('appointments');
-    const [bookings, setBookings] = useState([]);
-
-    const [isEditing, setIsEditing] = useState(false);
-    const [selectedApp, setSelectedApp] = useState(null);
-
     const dateOption = {
         weekday: 'long', 
         year: 'numeric', 
@@ -17,6 +13,18 @@ export default function Management() {
         day: 'numeric',  
         timeZone: 'UTC'
     }
+
+    const todayDate = new Date();
+    const todayLabel = todayDate.toLocaleDateString('en-US', dateOption);
+
+    const tomorrowDate = new Date();
+    tomorrowDate.setDate(todayDate.getDate() + 1);
+    const tomorrowLabel = tomorrowDate.toLocaleDateString('en-US', dateOption);
+
+    const [panel, setPanel] = useState('appointments');
+    const [bookings, setBookings] = useState([]);
+    const [isEditing, setIsEditing] = useState(false);
+    const [selectedApp, setSelectedApp] = useState(null);
 
     const handleDelete = async (id) => {
         // 1. Trigger the Swal Confirmation
@@ -89,12 +97,6 @@ export default function Management() {
         }
     };
 
-    const todayDate = new Date();
-    const todayLabel = todayDate.toLocaleDateString('en-US', dateOption);
-
-    const tomorrowDate = new Date();
-    tomorrowDate.setDate(todayDate.getDate() + 1);
-    const tomorrowLabel = tomorrowDate.toLocaleDateString('en-US', dateOption);
     const fetchBookings = async () => {
         try {
             const response = await fetch('/api/reservations/get-all');
@@ -128,28 +130,7 @@ export default function Management() {
     return (
         <div className="flex min-h-screen bg-gray-50">
             {/* --- SIDEBAR --- */}
-            <aside className="w-64 bg-white border-r border-gray-200 shadow-sm">
-                <div className="p-6">
-                    <h2 className="text-2xl font-black italic text-[#ED1B24]">WENDY'S</h2>
-                    <p className="text-xs text-gray-400 uppercase tracking-widest font-bold">Management</p>
-                </div>
-                <nav className="mt-4">
-                    <button 
-                        onClick={() => setPanel('appointments')}
-                        className={`w-full flex items-center px-6 py-4 transition-all ${panel === 'appointments' ? 'bg-[#FEF200]/10 text-[#ED1B24] border-r-4 border-[#ED1B24]' : 'text-gray-500 hover:bg-gray-50'}`}
-                    >
-                        <Calendar className="mr-3" size={20} />
-                        <span className="font-bold">Appointments</span>
-                    </button>
-                    <button 
-                        onClick={() => setPanel('customers')}
-                        className={`w-full flex items-center px-6 py-4 transition-all ${panel === 'customers' ? 'bg-[#FEF200]/10 text-[#ED1B24] border-r-4 border-[#ED1B24]' : 'text-gray-500 hover:bg-gray-50'}`}
-                    >
-                        <Users className="mr-3" size={20} />
-                        <span className="font-bold">Customers</span>
-                    </button>
-                </nav>
-            </aside>
+            <AdminSidebar setPanel={setPanel} panel={panel} />
 
             {/* --- MAIN CONTENT --- */}
             <main className="flex-1 p-8">
@@ -167,10 +148,7 @@ export default function Management() {
 
                         <div className="space-y-10">
                             {Object.keys(groupedBookings).length === 0 ? (
-                                <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-200">
-                                    <Calendar className="mx-auto text-gray-300 mb-4" size={48} />
-                                    <p className="text-gray-500 font-medium">No appointments scheduled yet.</p>
-                                </div>
+                                <NoAppointmentBox />
                             ) : (
                                 Object.keys(groupedBookings).map(date => (
                                     <section key={date}>
