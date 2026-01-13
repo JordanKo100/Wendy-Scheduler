@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Mail, User, Phone, Eye, EyeOff } from "lucide-react"; // Added icons for consistent look
 import formatPhoneNumber from "../utils/formatPhoneNumber";
 
+import Swal from 'sweetalert2';
+
 export default function Signup() {
     const navigate = useNavigate();
 
@@ -11,6 +13,7 @@ export default function Signup() {
     });
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [confirmSignup, setConfirmSignup] = useState(false);
     const [error, setError] = useState("");
 
     const handleChange = (e) => {
@@ -21,27 +24,75 @@ export default function Signup() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
+
+        // 1. Password Match Validation
         if (formData.password !== formData.passwordConfirm) {
-            setError("Passwords Do Not Match");
+            return setError("Passwords Do Not Match");
         }
 
-        const checkResponse = await fetch('/api/auth/check-user', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: formData.email })
+        // 2. Trigger Detailed Confirmation Box
+        Swal.fire({
+            title: 'VERIFY YOUR INFO',
+            // We use 'html' instead of 'text' to allow bolding and line breaks
+            html: `
+                <div style="text-align: left; background: #f9f9f9; padding: 20px; border-radius: 15px; border: 1px solid #eee;">
+                    <p style="margin-bottom: 8px;"><strong style="color: #ED1B24;">NAME:</strong> ${formData.firstName} ${formData.lastName}</p>
+                    <p style="margin-bottom: 8px;"><strong style="color: #ED1B24;">EMAIL:</strong> ${formData.email}</p>
+                    <p style="margin-bottom: 0;"><strong style="color: #ED1B24;">PHONE:</strong> ${formData.phone}</p>
+                </div>
+                <p style="margin-top: 15px; font-size: 0.9em; color: #666;">Is this information correct?</p>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#ED1B24', // Wendy's Red
+            cancelButtonColor: '#999',
+            confirmButtonText: 'YES, CREATE ACCOUNT',
+            cancelButtonText: 'EDIT INFO',
+            customClass: {
+                title: 'font-black italic uppercase text-xl',
+                popup: 'rounded-3xl border-4 border-[#FEF200]' // Wendy's Yellow
+            }
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    // 3. Check if user exists
+                    const checkResponse = await fetch('/api/auth/check-user', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: formData.email })
+                    });
+                    const checkResult = await checkResponse.json();
+
+                    if (checkResult.exists) {
+                        return setError("Email already in use. Please log in.");
+                    }
+
+                    // 4. Perform Signup
+                    const response = await fetch('/api/auth/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (response.ok) {
+                        Swal.fire({
+                            title: 'WELCOME TO WENDY\'S!',
+                            text: 'Your account is ready.',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        navigate('/login');
+                    } else {
+                        setError("Failed to create account. Please try again.");
+                    }
+                } catch (err) {
+                    console.error("Signup error:", err);
+                    setError("Connection error. Please check your internet.");
+                }
+            }
         });
-        const checkResult = await checkResponse.json();
-
-        if (checkResult.exists) {
-            setError("Email already in use. Please log in.");
-        } else {
-            const response = await fetch('/api/auth/signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-            if (response.ok) navigate('/login');
-        }
     };
 
     return (
