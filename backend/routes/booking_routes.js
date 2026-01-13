@@ -4,6 +4,7 @@ import {
     createReservation, 
     deleteReservation, 
     getAllReservation, 
+    getReservationsByEmail,
     updateReservation
 } from '../controllers/booking_controller.js'
 
@@ -11,6 +12,7 @@ const router = express.Router();
 
 router.post('/create', createReservation);
 router.get('/get-all', getAllReservation);
+router.get('/get-email/:email', getReservationsByEmail);
 router.delete('/delete/:id', deleteReservation);
 router.get('/check-availability/:date', checkAvailability);
 router.patch('/update/:id', updateReservation);

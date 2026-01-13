@@ -22,6 +22,26 @@ const createReservation = async (req, res) => {
     }
 }
 
+const getReservationsByEmail = async (req, res) => {
+    try {
+        const { email } = req.params;
+
+        const bookings = await Reservation.find({ email: email });
+
+        return res.status(200).json({
+            success: true,
+            bookings: bookings
+        });
+    } catch (err) {
+        console.error("Error fetching by email:", err.message);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to retrieve user reservations",
+            error: err.message
+        });
+    }
+}
+
 const getAllReservation = async (req, res) => {
     try {
         const bookings = await Reservation.find().sort({
@@ -74,9 +94,10 @@ const updateReservation = async (req, res) => {
     try {
         const {id} = req.params;
 
-        const {name, time, date} = req.body;
+        const {name, phone, time, date} = req.body;
         const updateData = { 
             name: name,
+            phone: phone,
             date: date,
             time: time
         };
@@ -89,6 +110,7 @@ const updateReservation = async (req, res) => {
 
 export { 
     createReservation, 
+    getReservationsByEmail,
     getAllReservation, 
     deleteReservation,
     checkAvailability,
