@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 
 import './App.css'
+import Swal from 'sweetalert2'
 
 import Splash from './pages/Splash';
 import Home from './pages/Home';
@@ -39,10 +40,26 @@ function App() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('user'); // Clear storage
-    setUser(null); // Reset state to show "Sign In" again
-    setCustomerStatus('guest');
-    navigate('/home');
+    Swal.fire({
+        title: 'Logging Out?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#ED1B24',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, Logout!',
+        cancelButtonText: 'Cancel',
+        customClass: {
+            title: 'font-black italic uppercase text-xl',
+            popup: 'rounded-3xl border-4 border-[#FEF200]' 
+        }
+      }).then(async (result) => {
+          if (result.isConfirmed) {
+            localStorage.removeItem('user'); // Clear storage
+            setUser(null);
+            setCustomerStatus('guest');
+            navigate('/home');
+          }
+      });
   };
 
   return (
