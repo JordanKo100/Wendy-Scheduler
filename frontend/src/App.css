@@ -47,7 +47,7 @@
   line-height: 1.1;        /* Reduces space between the two lines */
 }
 
-/* The top line: Wendy's 名流髮廊 */
+/* The top line: Wendy's*/
 .logoMainText {
   font-size: 1.5rem;
   font-weight: 900;
@@ -61,6 +61,6 @@
   color: #0056b3;         /* Deep Blue color */
   font-weight: 700;       /* Keep it bold so it's readable */
   text-transform: uppercase; /* Matches the awning's style */
-  margin-left: 90px;      /* Shifts it right to sit under the Chinese text */
+  margin-left: 50px;      /* Shifts it right to sit under the Chinese text */
   letter-spacing: 1px;    /* Adds a professional touch to small text */
 }

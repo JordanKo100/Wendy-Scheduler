@@ -69,7 +69,7 @@ function App() {
         <nav className="mainHeader">
           <div className="logo">
             <Link to="/" className="logoLink">
-              <span className="logoMainText">Wendy's 名流髮廊</span>
+              <span className="logoMainText">Wendy's</span>
               <span className="logoSubText">Hair Salon</span>
             </Link>
           </div>          
