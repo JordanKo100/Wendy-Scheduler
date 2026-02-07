@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import Swal from 'sweetalert2';
-import { Mail, User, Phone, Calendar, Clock } from "lucide-react";
+import { Mail, User, Phone, Calendar, Clock, Scissors, Sparkles, ChevronDown } from "lucide-react";
 import formatPhoneNumber from "../utils/formatPhoneNumber";
 import generateTimeSlots from "../utils/generateTimeSlots";
 import { useNavigate } from "react-router-dom";
+import { SERVICE_CATEGORIES } from "../utils/services.jsx";
 
 export default function Book({user, customerStatus}){
     const navigate = useNavigate();
@@ -19,6 +20,7 @@ export default function Book({user, customerStatus}){
         phone: "",
         date: "",
         time: "",
+        service: "",
         notes: ""
     });
 
@@ -93,11 +95,12 @@ const handleSubmit = async (e) => {
                 }
             });
             
-            // Optional: Clear form after success
+            // Clear form after success
             setFormData({
                 ...formData,
                 date: "",
                 time: "",
+                service: "",
                 notes: ""
             });
         } else {
@@ -218,6 +221,36 @@ const handleSubmit = async (e) => {
                                             ))}
                                     </select>
                                 </div>
+                            </div>
+                        </div>
+                        
+                        {/* 4. SERVICE TYPE */}
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold uppercase text-gray-500 ml-1">Select Service</label>
+                            <div className="relative">
+                                <div className="absolute left-3 top-3.5 z-10 pointer-events-none">
+                                    {/* Dynamic Icon based on selection or default */}
+                                    {formData.service ? <Sparkles className="text-[#ED1B24]" size={18}/> : <Scissors className="text-gray-400" size={18} />}
+                                </div>
+                                <select 
+                                    name="service" 
+                                    value={formData.service} 
+                                    onChange={handleChange} 
+                                    className="w-full pl-10 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#ED1B24] outline-none transition-all appearance-none relative z-0"
+                                    required
+                                >
+                                    <option value="">Select a service...</option>
+                                    {SERVICE_CATEGORIES.map((group) => (
+                                        <optgroup key={group.category} label={group.category}>
+                                            {group.services.map((s) => (
+                                                <option key={s.name} value={s.name}>
+                                                    {s.name} — {s.price}
+                                                </option>
+                                            ))}
+                                        </optgroup>
+                                    ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-3.5 text-gray-400 pointer-events-none" size={18} />
                             </div>
                         </div>
 

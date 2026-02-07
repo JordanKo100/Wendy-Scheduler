@@ -2,9 +2,9 @@ import Reservation from "../models/booking_model.js";
 
 const createReservation = async (req, res) => {
     try {        
-        const { name, email, phone, date, time, notes } = req.body;
+        const { name, email, phone, date, time, service, notes } = req.body;
         
-        const booking = new Reservation({ name, email, phone, date, time, notes });
+        const booking = new Reservation({ name, email, phone, date, time, service, notes });
         const savedBooking = await booking.save();
 
         return res.status(201).json({

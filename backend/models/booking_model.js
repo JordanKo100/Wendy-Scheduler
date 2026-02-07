@@ -6,6 +6,7 @@ const reservationSchema = new mongoose.Schema({
     phone: {type: String, required:true},
     date: {type: Date, required:true},
     time: {type: String, required:true},
+    service: {type: String, required: true},
     notes: {type: String, required:false},
     // expireAt: {
     //     type: Date,

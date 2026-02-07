@@ -1,42 +1,7 @@
-import { Scissors, Sparkles, Wind, Eraser } from 'lucide-react';
-
+import { SERVICE_CATEGORIES } from '../utils/services.jsx';
 import BookButton from '../components/BookButton';
 
 export default function Pricing() {
-    const serviceCategories = [
-        {
-            category: "Haircuts",
-            icon: <Scissors className="text-[#ED1B24]" size={24} />,
-            services: [
-                { name: "Men's", price: "$18" },
-                { name: "Women's (Short Hair)", price: "$21" },
-                { name: "Women's (Medium Hair)", price: "$25" },
-                { name: "Women's (Long Hair)", price: "$28+" },
-                { name: "Men's (Senior)", price: "$16.50" },
-                { name: "Women's (Senior)", price: "$20" },
-                { name: "Kids (Under 3)", price: "$10" },
-                { name: "Boys (Under 13)", price: "$14.50" },
-                { name: "Girls (Under 13)", price: "$18" }
-            ]
-        },
-        {
-            category: "Styling & Perm",
-            icon: <Wind className="text-[#0078c4]" size={24} />,
-            services: [
-                { name: "Perm", price: "$85+" },
-                { name: "Straightening", price: "$180+" }
-            ]
-        },
-        {
-            category: "Color",
-            icon: <Sparkles className="text-[#FEF200]" size={24} />,
-            services: [
-                { name: "Color", price: "$45+" },
-                { name: "Highlights", price: "$55+" },
-            ]
-        }
-    ];
-
     return (
         <div className="min-h-screen bg-[#F9F8F6] py-20 px-6 font-sans">
             <div className="max-w-5xl mx-auto">
@@ -55,7 +20,7 @@ export default function Pricing() {
 
                 {/* --- PRICING GRID --- */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {serviceCategories.map((group, idx) => (
+                    {SERVICE_CATEGORIES.map((group, idx) => (
                         <div key={idx} className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group">
                             <div className="flex items-center gap-3 mb-8">
                                 <div className="p-3 bg-gray-50 rounded-2xl group-hover:scale-110 transition-transform">

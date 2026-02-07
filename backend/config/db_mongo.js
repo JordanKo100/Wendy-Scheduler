@@ -13,7 +13,7 @@ const connectDB = async () => {
 
     try {
         // Ensure your MONGODB_URI in .env doesn't end with a slash
-        await mongoose.connect(`${process.env.MONGODB_URI}/form`);
+        await mongoose.connect(`${process.env.MONGODB_URI}`);
     } catch (error) {
         console.error("Could not connect to MongoDB:", error);
         process.exit(1);
