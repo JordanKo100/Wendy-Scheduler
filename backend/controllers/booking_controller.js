@@ -1,118 +1,104 @@
-import Reservation from "../models/booking_model.js";
+import Reservation from '../models/booking_model.js';
 
-const createReservation = async (req, res) => {
-    try {        
-        const { name, email, phone, date, time, service, notes } = req.body;
-        
-        const booking = new Reservation({ name, email, phone, date, time, service, notes });
-        const savedBooking = await booking.save();
+// Customers can only create reservations under their own email.
+export async function createReservation(req, res) {
+    try {
+        const { name, email, phone, date, time, notes } = req.body;
 
-        return res.status(201).json({
-            success: true,
-            message: "Reservation created",
-            reservation: savedBooking
-        });
+        if (req.user.role !== 'admin' && email !== req.user.email) {
+            return res.status(403).json({ message: 'Cannot book for another user' });
+        }
+
+        const booking = await Reservation.create({ name, email, phone, date, time, notes });
+        return res.status(201).json({ reservation: booking });
     } catch (err) {
-        console.error("The actual error is:", err.message);
-        return res.status(500).json({
-            success: false,
-            message: "Server Error",
-            error: err.message
-        });
+        console.error('createReservation:', err);
+        return res.status(500).json({ message: 'Failed to create reservation' });
     }
 }
 
-const getReservationsByEmail = async (req, res) => {
+// Admin-only.
+export async function getAllReservations(_req, res) {
+    try {
+        const bookings = await Reservation.find().sort({ date: 1, time: 1 });
+        return res.status(200).json({ bookings });
+    } catch (err) {
+        console.error('getAllReservations:', err);
+        return res.status(500).json({ message: 'Failed to retrieve reservations' });
+    }
+}
+
+// Customer can only read their own; admin can read anyone's.
+export async function getReservationsByEmail(req, res) {
     try {
         const { email } = req.params;
 
-        const bookings = await Reservation.find({ email: email });
+        if (req.user.role !== 'admin' && email.toLowerCase() !== req.user.email) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
 
-        return res.status(200).json({
-            success: true,
-            bookings: bookings
-        });
+        const bookings = await Reservation.find({ email: email.toLowerCase() });
+        return res.status(200).json({ bookings });
     } catch (err) {
-        console.error("Error fetching by email:", err.message);
-        return res.status(500).json({
-            success: false,
-            message: "Failed to retrieve user reservations",
-            error: err.message
-        });
+        console.error('getReservationsByEmail:', err);
+        return res.status(500).json({ message: 'Failed to retrieve reservations' });
     }
 }
 
-const getAllReservation = async (req, res) => {
+export async function deleteReservation(req, res) {
     try {
-        const bookings = await Reservation.find().sort({
-            date: 1,
-            time: 1
-        });
-        return res.status(200).json({
-            success: true,
-            bookings: bookings
-        });
+        const { id } = req.params;
+        const booking = await Reservation.findById(id);
+        if (!booking) return res.status(404).json({ message: 'Not found' });
+
+        if (req.user.role !== 'admin' && booking.email !== req.user.email) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+
+        await booking.deleteOne();
+        return res.status(204).end();
     } catch (err) {
-        console.error("The actual error is:", err.message);
-        return res.status(500).json({
-            success: false,
-            message: "Failed to retrieve data",
-            error: err.message
-        });
+        console.error('deleteReservation:', err);
+        return res.status(500).json({ message: 'Failed to delete reservation' });
     }
 }
 
-const deleteReservation = async (req, res) => {
+export async function updateReservation(req, res) {
     try {
-        const {id} = req.params;
-        await Reservation.findByIdAndDelete(id);
-        return res.status(200).json({
-            success: true,
-            message: "Reservation deleted"
-        })
-    } catch (err) {
-        console.error("The actual error is:", err.message);
-        return res.status(500).json({
-            success: false,
-            message: "Failed to delete reservation",
-            error: err.message
+        const { id } = req.params;
+        const booking = await Reservation.findById(id);
+        if (!booking) return res.status(404).json({ message: 'Not found' });
+
+        if (req.user.role !== 'admin' && booking.email !== req.user.email) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+
+        // Only allow whitelisted fields.
+        const { name, phone, date, time } = req.body;
+        Object.assign(booking, {
+            ...(name !== undefined && { name }),
+            ...(phone !== undefined && { phone }),
+            ...(date !== undefined && { date }),
+            ...(time !== undefined && { time }),
         });
-    }
-}
+        await booking.save();
 
-const checkAvailability = async (req, res) => {
-    try {
-        const booked = await Reservation.find({ date: req.params.date }).select('time');
-        const times = booked.map(b => b.time); // Returns e.g. ["10:00 AM", "1:30 PM"]
-        res.json({ success: true, takenSlots: times });
+        return res.status(200).json({ reservation: booking });
     } catch (err) {
-        res.status(500).json({ success: false });
+        console.error('updateReservation:', err);
+        return res.status(500).json({ message: 'Failed to update reservation' });
     }
 }
 
-const updateReservation = async (req, res) => {
+// Public endpoint — returns only time slots, no PII.
+export async function checkAvailability(req, res) {
     try {
-        const {id} = req.params;
-
-        const {name, phone, time, date} = req.body;
-        const updateData = { 
-            name: name,
-            phone: phone,
-            date: date,
-            time: time
-        };
-        await Reservation.findByIdAndUpdate(id, updateData)
-        res.json({success: true, message: "Successfully Updated Appointment"});
+        const { date } = req.params;
+        const booked = await Reservation.find({ date }).select('time -_id');
+        const takenSlots = booked.map((b) => b.time);
+        return res.status(200).json({ takenSlots });
     } catch (err) {
-        res.status(500).json({success: false});
+        console.error('checkAvailability:', err);
+        return res.status(500).json({ message: 'Failed to check availability' });
     }
 }
-
-export { 
-    createReservation, 
-    getReservationsByEmail,
-    getAllReservation, 
-    deleteReservation,
-    checkAvailability,
-    updateReservation
-};

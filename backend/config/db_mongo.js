@@ -1,23 +1,18 @@
 import mongoose from 'mongoose';
-import 'dotenv/config'; // This is the ESM way to load .env variables
+import { config } from './index.js';
 
-const connectDB = async () => {
-    // It is good practice to handle connection errors
-    mongoose.connection.on('connected', () => {
-        console.log("✅ Connected to MongoDB");
-    });
-
-    mongoose.connection.on('error', (err) => {
-        console.log("❌ MongoDB Connection Error: " + err);
-    });
+export default async function connectMongo() {
+    mongoose.connection.on('connected', () =>
+        console.log('✅ MongoDB connected'),
+    );
+    mongoose.connection.on('error', (err) =>
+        console.error('❌ MongoDB error:', err.message),
+    );
 
     try {
-        // Ensure your MONGODB_URI in .env doesn't end with a slash
-        await mongoose.connect(`${process.env.MONGODB_URI}`);
-    } catch (error) {
-        console.error("Could not connect to MongoDB:", error);
+        await mongoose.connect(`${config.mongo.uri}/${config.mongo.db}`);
+    } catch (err) {
+        console.error('Could not connect to MongoDB:', err.message);
         process.exit(1);
     }
 }
-
-export default connectDB;
