@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, Clock, Phone, Pencil } from "lucide-react";
+import { Users, Clock, Phone, Pencil, Sparkle } from "lucide-react";
 import Swal from 'sweetalert2';
 
 import AdminSidebar from "../components/AdminSidebar";
@@ -85,7 +85,6 @@ export default function Management() {
             setIsEditing(false);
             fetchBookings();
             
-            // Add this for a better experience:
             Swal.fire({
                 toast: true,
                 position: 'top-end',
@@ -178,7 +177,10 @@ export default function Management() {
                                                         <div>
                                                             <h4 className="text-lg font-bold text-gray-900">{app.name}</h4>
                                                             <div className="flex items-center text-sm text-gray-500 mt-1">
-                                                                <Phone size={14} className="mr-2" /> {app.phone}
+                                                                <Phone size={14} className="mr-2" /> {app.phone} 
+                                                            </div>
+                                                            <div className="flex items-center text-sm text-gray-500 mt-1">
+                                                                <Sparkle size={14} className="mr-2" /> {app.service}     
                                                             </div>
                                                         </div>
                                                     </div>
